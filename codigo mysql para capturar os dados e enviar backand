@@ -1,0 +1,96 @@
+2. Código JavaScript para Capturar os Dados e Enviar ao Backend:
+No seu arquivo app.js, você pode capturar os dados do formulário de cadastro e fazer uma requisição ao servidor para registrar o usuário.
+
+javascript
+Copiar código
+document.getElementById('signup-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    // Captura os dados do formulário
+    const nome = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const senha = document.getElementById('password').value;
+
+    // Enviar os dados para o servidor usando fetch (com uma requisição POST)
+    fetch('/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            nome: nome,
+            email: email,
+            senha: senha
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Usuário cadastrado com sucesso!');
+            window.location.href = 'login.html'; // Redirecionar para login
+        } else {
+            alert('Erro ao cadastrar usuário.');
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+    });
+});
+Passo 7: Backend (Node.js com Express e MySQL)
+Agora, você precisa de um backend que lide com a requisição POST enviada pelo frontend para registrar um usuário. Aqui está um exemplo simples de backend utilizando Node.js com Express e MySQL:
+
+1. Instalação de Dependências
+Primeiro, instale as dependências:
+
+bash
+Copiar código
+npm install express mysql body-parser
+2. Código Backend em Node.js (app.js)
+javascript
+Copiar código
+const express = require('express');
+const mysql = require('mysql');
+const bodyParser = require('body-parser');
+
+const app = express();
+const port = 3000;
+
+// Configuração do body parser
+app.use(bodyParser.json());
+
+// Conexão com o banco de dados MySQL
+const db = mysql.createConnection({
+    host: 'localhost',
+    user: 'root',
+    password: 'root',  // Substitua pela sua senha
+    database: 'loja'
+});
+
+db.connect((err) => {
+    if (err) {
+        console.error('Erro de conexão: ' + err.stack);
+        return;
+    }
+    console.log('Conectado ao banco de dados MySQL!');
+});
+
+// Endpoint para registrar usuário
+app.post('/register', (req, res) => {
+    const { nome, email, senha } = req.body;
+
+    // Preparar a query para inserir o usuário no banco de dados
+    const query = 'INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)';
+    
+    db.query(query, [nome, email, senha], (err, result) => {
+        if (err) {
+            res.json({ success: false, message: 'Erro ao cadastrar usuário.' });
+            return;
+        }
+        res.json({ success: true, message: 'Usuário cadastrado com sucesso!' });
+    });
+});
+
+// Iniciar o servidor
+app.listen(port, () => {
+    console.log(`Servidor rodando na porta ${port}`);
+});
