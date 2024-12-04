@@ -1,0 +1,14 @@
+select * from usuarios;
+insert into usuarios(nome, email, senha)
+values("João Silva", "joao.silva@email.com", "senhaSegura123");
+
+UPDATE usuarios
+SET nome = 'João Silva Souza', email = 'joao.souza@email.com'
+WHERE id = 1;
+
+DELETE FROM usuarios
+WHERE id = 1
+
+SELECT * FROM usuarios;
+
+SELECT * FROM usuarios WHERE id = 1
